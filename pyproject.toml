@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cotbias"
+version = "0.1.0"
+description = "Official Python client for the CFTC COT Bias Terminal Quant API"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "COTBiasTerminal", email = "support@cotbiasterminal.com" }
+]
+dependencies = [
+    "httpx[http2]>=0.27.0",
+    "pydantic>=2.5.0",
+    "pandas>=2.0.0",
+]
+
+[project.urls]
+Homepage = "https://cot-bias-terminal.com"
+Documentation = "https://docs.cot-bias-terminal.com"
+Repository = "https://github.com/cot-bias-terminal/cotbias"
+
