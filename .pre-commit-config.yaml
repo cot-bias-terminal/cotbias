@@ -1,0 +1,66 @@
+default_stages: [pre-commit]
+
+repos:
+  # ── General & Git Hygiene (language-agnostic) ──────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: debug-statements       # Catches leftover breakpoint() / pdb in Python
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-case-conflict    # Prevents OS-specific filename casing issues
+      - id: check-symlinks
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: detect-private-key      # Catches accidental SSH/SSL private key commits
+      - id: no-commit-to-branch    # Prevents direct commits to protected branches
+        args: [--branch, main, --branch, production]
+
+  # ── Security & Credentials scanning ────────────────────────────────────────────────
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        name: detect secrets
+        description: Detects high-entropy secrets and credentials before they are committed
+        exclude: (?x)^(
+          .*\.lock|
+          uv\.lock|
+          tests/.*|
+          README\.md|
+          src/cotbias/client\.py
+          )$
+
+  # ── Python: Ruff (lint + format) ──────────────────────────────────────────────────
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.5.0
+    hooks:
+      - id: ruff                   # Linter — auto-fixes what it can
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format            # Formatter
+
+  # ── Python: mypy (type checking) ──────────────────────────────────────────────────
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy (cotbias)
+        entry: uv run mypy src tests
+        language: system
+        types: [python]
+        pass_filenames: false
+
+  # ── Python: pytest (unit tests) ────────────────────────────────────────────────────
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: uv run pytest tests -v
+        language: system
+        types: [python]
+        pass_filenames: false

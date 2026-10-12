@@ -1,34 +1,31 @@
-from typing import Optional
+from __future__ import annotations
+
 import httpx
-from pydantic import BaseModel
 
-
-class MarketMetadata(BaseModel):
-    symbol: str
-    name: str
-    cftc_code: str
-    sector: str
-    report_type: str
-    has_options: bool
+from cotbias.exceptions import handle_error_response
+from cotbias.models.markets import MarketMetadata, MarketsResponse
 
 
 class MarketsResource:
-    def __init__(self, client: httpx.Client):
+    def __init__(self, client: httpx.Client) -> None:
         self._client = client
 
-    def list(self, sector: Optional[str] = None) -> list[MarketMetadata]:
+    def list(self, sector: str | None = None) -> list[MarketMetadata]:
+        """List tracked markets across sectors with available CFTC report mappings."""
         params = {"sector": sector} if sector else {}
         resp = self._client.get("/markets", params=params)
-        resp.raise_for_status()
-        return [MarketMetadata.model_validate(item) for item in resp.json().get("markets", [])]
+        handle_error_response(resp)
+        parsed = MarketsResponse.model_validate(resp.json())
+        return parsed.markets
 
 
 class AsyncMarketsResource:
-    def __init__(self, client: httpx.AsyncClient):
+    def __init__(self, client: httpx.AsyncClient) -> None:
         self._client = client
 
-    async def list(self, sector: Optional[str] = None) -> list[MarketMetadata]:
+    async def list(self, sector: str | None = None) -> list[MarketMetadata]:
         params = {"sector": sector} if sector else {}
         resp = await self._client.get("/markets", params=params)
-        resp.raise_for_status()
-        return [MarketMetadata.model_validate(item) for item in resp.json().get("markets", [])]
+        handle_error_response(resp)
+        parsed = MarketsResponse.model_validate(resp.json())
+        return parsed.markets
