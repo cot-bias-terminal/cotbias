@@ -1,83 +1,134 @@
-from typing import Literal, Union
+from __future__ import annotations
+
+from typing import Literal, Union, cast, overload
 import httpx
 import pandas as pd
-from cotbias.exceptions import AuthenticationError, NotFoundError, CotApiError
 
+from cotbias.exceptions import handle_error_response
+from cotbias.models.timeseries import TimeseriesResponse
 
 ContractType = Literal["fut", "futopt", "opt"]
+ReportType = Literal["legacy", "pro", "disaggregated", "tff", "supplemental"]
 
 
 class TimeseriesResource:
-    def __init__(self, client: httpx.Client):
+    def __init__(self, client: httpx.Client) -> None:
         self._client = client
+
+    @overload
+    def get(
+        self,
+        symbol: str,
+        contract_type: ContractType = ...,
+        lookback_weeks: int = ...,
+        report: ReportType = ...,
+        as_dataframe: Literal[True] = ...,
+    ) -> pd.DataFrame: ...
+
+    @overload
+    def get(
+        self,
+        symbol: str,
+        contract_type: ContractType = ...,
+        lookback_weeks: int = ...,
+        report: ReportType = ...,
+        as_dataframe: Literal[False] = ...,
+    ) -> TimeseriesResponse: ...
 
     def get(
         self,
         symbol: str,
         contract_type: ContractType = "futopt",
         lookback_weeks: int = 156,
+        report: ReportType = "legacy",
         as_dataframe: bool = True,
-    ) -> Union[pd.DataFrame, list[dict]]:
+    ) -> Union[pd.DataFrame, TimeseriesResponse]:
         """Fetch historical positioning data.
-        
+
         Args:
             symbol: Asset ticker (e.g., 'GC', 'ES', 'CL', 'ZC').
             contract_type: 'fut' (Futures only), 'futopt' (Combined), or 'opt' (Options delta).
             lookback_weeks: Number of weekly reports to pull (default 156 = 3 years).
-            as_dataframe: Returns a DatetimeIndex-sorted Pandas DataFrame if True.
+            report: 'legacy' (default), 'pro', 'disaggregated', 'tff', or 'supplemental'.
+            as_dataframe: Returns a DatetimeIndex-sorted Pandas DataFrame if True, or TimeseriesResponse if False.
         """
         params = {
             "contract_type": contract_type,
             "lookback_weeks": lookback_weeks,
+            "report": report,
         }
         resp = self._client.get(f"/timeseries/{symbol.upper()}", params=params)
+        handle_error_response(resp)
 
-        if resp.status_code == 401:
-            raise AuthenticationError("Invalid API key", status_code=401)
-        elif resp.status_code == 404:
-            raise NotFoundError(f"Market '{symbol}' not found", status_code=404)
-        elif resp.status_code != 200:
-            raise CotApiError(f"Timeseries request failed: {resp.text}", status_code=resp.status_code)
-
-        data = resp.json().get("data", [])
+        parsed = TimeseriesResponse.model_validate(resp.json())
 
         if not as_dataframe:
-            return data
+            return parsed
 
-        if not data:
-            return pd.DataFrame()
+        raw_data = [row.model_dump() for row in parsed.data]
+        if not raw_data:
+            return cast(pd.DataFrame, pd.DataFrame())
 
-        df = pd.DataFrame(data)
+        df = pd.DataFrame(raw_data)
         if "report_date" in df.columns:
             df["report_date"] = pd.to_datetime(df["report_date"])
             df = df.set_index("report_date").sort_index(ascending=True)
 
-        return df
+        return cast(pd.DataFrame, df)
 
 
 class AsyncTimeseriesResource:
-    def __init__(self, client: httpx.AsyncClient):
+    def __init__(self, client: httpx.AsyncClient) -> None:
         self._client = client
+
+    @overload
+    async def get(
+        self,
+        symbol: str,
+        contract_type: ContractType = ...,
+        lookback_weeks: int = ...,
+        report: ReportType = ...,
+        as_dataframe: Literal[True] = ...,
+    ) -> pd.DataFrame: ...
+
+    @overload
+    async def get(
+        self,
+        symbol: str,
+        contract_type: ContractType = ...,
+        lookback_weeks: int = ...,
+        report: ReportType = ...,
+        as_dataframe: Literal[False] = ...,
+    ) -> TimeseriesResponse: ...
 
     async def get(
         self,
         symbol: str,
         contract_type: ContractType = "futopt",
         lookback_weeks: int = 156,
+        report: ReportType = "legacy",
         as_dataframe: bool = True,
-    ) -> Union[pd.DataFrame, list[dict]]:
-        params = {"contract_type": contract_type, "lookback_weeks": lookback_weeks}
+    ) -> Union[pd.DataFrame, TimeseriesResponse]:
+        params = {
+            "contract_type": contract_type,
+            "lookback_weeks": lookback_weeks,
+            "report": report,
+        }
         resp = await self._client.get(f"/timeseries/{symbol.upper()}", params=params)
+        handle_error_response(resp)
 
-        if resp.status_code != 200:
-            raise CotApiError(f"Request failed: {resp.text}", status_code=resp.status_code)
+        parsed = TimeseriesResponse.model_validate(resp.json())
 
-        data = resp.json().get("data", [])
-        if not as_dataframe or not data:
-            return data
+        if not as_dataframe:
+            return parsed
 
-        df = pd.DataFrame(data)
+        raw_data = [row.model_dump() for row in parsed.data]
+        if not raw_data:
+            return cast(pd.DataFrame, pd.DataFrame())
+
+        df = pd.DataFrame(raw_data)
         if "report_date" in df.columns:
             df["report_date"] = pd.to_datetime(df["report_date"])
             df = df.set_index("report_date").sort_index(ascending=True)
-        return df
+
+        return cast(pd.DataFrame, df)

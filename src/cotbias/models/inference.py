@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from typing import Literal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class QualitativeAttribution(BaseModel):
@@ -9,6 +11,8 @@ class QualitativeAttribution(BaseModel):
 
 
 class InferenceSchema(BaseModel):
+    symbol: str
+    report_date: str
     ai_bias_score: Literal[
         "Strongly Bullish",
         "Bullish",
@@ -46,11 +50,7 @@ class InferenceSchema(BaseModel):
         "Depressed (10-30%)",
         "Extreme Oversold (<10%)",
     ]
-    crowdedness_risk: Literal[
-        "High Liquidation Risk",
-        "High Squeeze Risk",
-        "Balanced",
-    ]
+    crowdedness_risk: Literal["High Liquidation Risk", "High Squeeze Risk", "Balanced"]
     smart_money_divergence: Literal["Aggressive", "Conservative", "Neutral"]
     dumb_money_index: Literal["Euphoria", "Fear", "Neutral"]
     qualitative_attribution: QualitativeAttribution
