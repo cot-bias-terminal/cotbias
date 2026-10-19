@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 from typing import Any
+
 import httpx
 
 
@@ -24,19 +26,13 @@ class CotApiError(Exception):
 class AuthenticationError(CotApiError):
     """401: Invalid, missing, or expired API key."""
 
-    pass
-
 
 class PermissionDeniedError(CotApiError):
     """403: API key revoked or tier does not permit access."""
 
-    pass
-
 
 class NotFoundError(CotApiError):
     """404: Symbol, report, or resource not found in market universe."""
-
-    pass
 
 
 class RateLimitExceededError(CotApiError):
@@ -56,8 +52,6 @@ class RateLimitExceededError(CotApiError):
 class ServerError(CotApiError):
     """500+: Backend Cloud Function or Cloud SQL error."""
 
-    pass
-
 
 def handle_error_response(resp: httpx.Response) -> None:
     """Parse API error envelope and raise the appropriate typed exception."""
@@ -67,7 +61,7 @@ def handle_error_response(resp: httpx.Response) -> None:
     body: dict[str, Any] = {}
     try:
         body = resp.json()
-    except Exception:
+    except (ValueError, TypeError, json.JSONDecodeError):
         body = {}
 
     err = body.get("error", {})

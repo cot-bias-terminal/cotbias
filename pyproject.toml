@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cotbias"
-version = "0.1.0"
-description = "Official Python client for the CFTC COT Bias Terminal Quant API"
+version = "0.2.0"
+description = "Official Python client & MCP Server for CFTC COT Bias Terminal Quant API"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -26,19 +26,31 @@ classifiers = [
 dependencies = [
     "httpx[http2]>=0.27.0",
     "pydantic>=2.9.0",
-    "pandas>=2.0.0",
 ]
 
 [project.optional-dependencies]
+pandas = [
+    "pandas>=2.0.0",
+]
+mcp = [
+    "mcp>=2.0.0",
+]
+all = [
+    "cotbias[pandas,mcp]",
+]
 dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
     "respx>=0.21.0",
     "mypy>=1.10.0",
+    "pandas>=2.0.0",
     "pandas-stubs>=2.0.0",
     "ruff>=0.5.0",
     "pre-commit>=3.7.0",
 ]
+
+[project.scripts]
+cotbias-mcp = "cotbias.mcp.server:main"
 
 [project.urls]
 Homepage = "https://cot-bias-terminal.com"

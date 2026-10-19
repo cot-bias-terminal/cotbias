@@ -24,11 +24,11 @@ from .models import (
 __version__ = "0.1.0"
 
 __all__ = [
+    "DEFAULT_BASE_URL",
     "AsyncCotClient",
     "AuthenticationError",
     "CotApiError",
     "CotClient",
-    "DEFAULT_BASE_URL",
     "InferenceSchema",
     "MarketMetadata",
     "MarketsResponse",

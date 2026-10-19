@@ -3,7 +3,9 @@ from __future__ import annotations
 import httpx
 import pytest
 import respx
+
 from cotbias import AsyncCotClient
+from cotbias.models import TimeseriesResponse
 
 
 @pytest.mark.asyncio
@@ -48,8 +50,11 @@ async def test_async_timeseries_and_inference():
     )
 
     async with AsyncCotClient(api_key="cot_live_test") as cot:
-        df = await cot.timeseries.get("GC")
+        ts = await cot.timeseries.get("GC")
+        df = await cot.timeseries.get("GC", as_dataframe=True)
         inf = await cot.inference.get("GC")
 
+    assert isinstance(ts, TimeseriesResponse)
+    assert ts.count == 1
     assert len(df) == 1
     assert inf.ai_bias_score == "Bullish"

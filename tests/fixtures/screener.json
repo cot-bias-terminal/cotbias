@@ -1,0 +1,23 @@
+{
+  "total_matches": 2,
+  "results": [
+    {
+      "symbol": "ES",
+      "ai_bias_score": "Bullish",
+      "regime_status": "Bullish Alignment",
+      "crowdedness_risk": "Balanced",
+      "primary_driver": "Asset Managers",
+      "momentum": "New Longs (OI Expanding)",
+      "cot_52w_commercial": 74.2
+    },
+    {
+      "symbol": "GC",
+      "ai_bias_score": "Strongly Bullish",
+      "regime_status": "Bullish Alignment",
+      "crowdedness_risk": "High Squeeze Risk",
+      "primary_driver": "Leveraged Funds",
+      "momentum": "Short Covering (OI Contracting)",
+      "cot_52w_commercial": 88.9
+    }
+  ]
+}

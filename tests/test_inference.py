@@ -3,6 +3,7 @@ from __future__ import annotations
 import httpx
 import pytest
 import respx
+
 from cotbias import CotClient
 from cotbias.exceptions import RateLimitExceededError
 from cotbias.models import InferenceSchema

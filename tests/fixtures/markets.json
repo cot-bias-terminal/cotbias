@@ -1,0 +1,22 @@
+{
+  "markets": [
+    {
+      "symbol": "ES",
+      "name": "E-MINI S&P 500",
+      "cftc_code": "13874+",
+      "sector": "Equity",
+      "report_type": "legacy",
+      "has_options": true,
+      "available_reports": ["legacy", "pro"]
+    },
+    {
+      "symbol": "GC",
+      "name": "GOLD",
+      "cftc_code": "088691",
+      "sector": "Commodity",
+      "report_type": "legacy",
+      "has_options": true,
+      "available_reports": ["legacy", "disaggregated"]
+    }
+  ]
+}

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class MarketMetadata(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     symbol: str
     name: str
     cftc_code: str
@@ -14,4 +16,6 @@ class MarketMetadata(BaseModel):
 
 
 class MarketsResponse(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     markets: list[MarketMetadata]

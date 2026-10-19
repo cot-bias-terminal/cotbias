@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import httpx
-import respx
 import pandas as pd
+import respx
+
 from cotbias import CotClient
 from cotbias.models import ScreenerResponse
 
