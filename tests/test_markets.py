@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import httpx
 import respx
+
 from cotbias import CotClient
 from cotbias.models import MarketMetadata
 

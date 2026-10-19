@@ -24,6 +24,8 @@ class TimeseriesRow(BaseModel):
 
 
 class TimeseriesResponse(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
     symbol: str
     cftc_code: str
     contract_type: str

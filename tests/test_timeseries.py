@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import httpx
+import pandas as pd
 import pytest
 import respx
-import pandas as pd
+
 from cotbias import CotClient
 from cotbias.exceptions import NotFoundError
 from cotbias.models import TimeseriesResponse

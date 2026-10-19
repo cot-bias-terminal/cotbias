@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import pytest
-from cotbias import CotClient, AsyncCotClient
+
+from cotbias import AsyncCotClient, CotClient
 from cotbias.config import DEFAULT_BASE_URL
 
 
