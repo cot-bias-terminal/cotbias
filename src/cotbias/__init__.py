@@ -1,6 +1,13 @@
+"""Official Python client and MCP Server for CFTC COT Bias Terminal Quant API.
+
+Provides institutional Commitment of Traders (COT) analytics, historical timeseries,
+cross-asset screeners, and AI-driven positioning regimes directly in Python and
+in AI assistants.
+"""
+
 from __future__ import annotations
 
-from .client import AsyncCotClient, CotClient
+from .client import AsyncCotClient, CotClient, __version__
 from .config import DEFAULT_BASE_URL
 from .exceptions import (
     AuthenticationError,
@@ -21,8 +28,6 @@ from .models import (
     TimeseriesRow,
 )
 
-__version__ = "0.1.0"
-
 __all__ = [
     "DEFAULT_BASE_URL",
     "AsyncCotClient",
@@ -41,4 +46,5 @@ __all__ = [
     "ServerError",
     "TimeseriesResponse",
     "TimeseriesRow",
+    "__version__",
 ]

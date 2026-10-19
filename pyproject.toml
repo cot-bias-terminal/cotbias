@@ -67,6 +67,18 @@ asyncio_mode = "auto"
 target-version = "py310"
 line-length = 120
 
+[tool.ruff.lint]
+select = ["E", "F", "I", "D"]
+ignore = [
+    "D105",  # Missing docstring in magic method
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D"]
+
 [tool.mypy]
 python_version = "3.10"
 warn_return_any = true

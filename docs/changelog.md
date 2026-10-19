@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.2] - 2026-10-19
+
+### Added
+- Comprehensive Google-style docstrings and type annotations across `CotClient`, `AsyncCotClient`, resources, models, exceptions, retry transports, and MCP server.
+- MkDocs documentation suite hosted via GitHub Pages with auto-generated API references.
+- Identity guardrails in pre-commit and GitHub Actions CI.
+
+---
+
 ## [0.2.1] - 2026-10-19
 
 ### Changed

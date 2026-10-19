@@ -1,4 +1,8 @@
-def main():
+"""Sample script entrypoint for local testing."""
+
+
+def main() -> None:
+    """Print local welcome message."""
     print("Hello from cotbias!")
 
 

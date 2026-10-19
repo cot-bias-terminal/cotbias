@@ -1,3 +1,5 @@
+"""Exception classes and error handling utilities for the COT Bias Quant API."""
+
 from __future__ import annotations
 
 import json
@@ -7,7 +9,14 @@ import httpx
 
 
 class CotApiError(Exception):
-    """Base exception for all COT Bias API errors."""
+    """Base exception for all COT Bias API errors.
+
+    Attributes:
+        message: Human-readable error message.
+        status_code: HTTP status code returned by the upstream API (e.g. 401, 403, 429, 500).
+        code: Machine-readable error code string (e.g. `'RATE_LIMIT_EXCEEDED'`).
+        response_body: Decoded JSON response payload from the API server, if available.
+    """
 
     def __init__(
         self,
@@ -16,6 +25,14 @@ class CotApiError(Exception):
         code: str | None = None,
         response_body: dict[str, Any] | None = None,
     ) -> None:
+        """Initialize the API error.
+
+        Args:
+            message: Human-readable error message.
+            status_code: HTTP status code if known.
+            code: Internal error code string if returned by API.
+            response_body: Raw parsed dictionary from the server error response.
+        """
         super().__init__(message)
         self.message = message
         self.status_code = status_code
@@ -24,19 +41,29 @@ class CotApiError(Exception):
 
 
 class AuthenticationError(CotApiError):
-    """401: Invalid, missing, or expired API key."""
+    """Raised when an API request fails authentication (HTTP 401).
+
+    Typically indicates a missing, invalid, or expired Quant tier API key.
+    """
 
 
 class PermissionDeniedError(CotApiError):
-    """403: API key revoked or tier does not permit access."""
+    """Raised when the provided API key does not have access permissions (HTTP 403).
+
+    Typically indicates an account on a tier insufficient for quant/API data access.
+    """
 
 
 class NotFoundError(CotApiError):
-    """404: Symbol, report, or resource not found in market universe."""
+    """Raised when the requested asset, ticker symbol, or report was not found (HTTP 404)."""
 
 
 class RateLimitExceededError(CotApiError):
-    """429: API rate limit or daily quota exceeded."""
+    """Raised when the API rate limit or daily quota is exceeded (HTTP 429).
+
+    Attributes:
+        retry_after: Seconds to wait before attempting another request.
+    """
 
     def __init__(
         self,
@@ -45,16 +72,36 @@ class RateLimitExceededError(CotApiError):
         code: str = "RATE_LIMIT_EXCEEDED",
         response_body: dict[str, Any] | None = None,
     ) -> None:
+        """Initialize the rate limit error.
+
+        Args:
+            message: Human-readable rate limit message.
+            retry_after: Recommended wait interval in seconds.
+            code: Machine-readable error code.
+            response_body: Raw parsed error dictionary.
+        """
         super().__init__(message, status_code=429, code=code, response_body=response_body)
         self.retry_after = retry_after
 
 
 class ServerError(CotApiError):
-    """500+: Backend Cloud Function or Cloud SQL error."""
+    """Raised when the upstream COT Bias server encounters an internal error (HTTP 5xx)."""
 
 
 def handle_error_response(resp: httpx.Response) -> None:
-    """Parse API error envelope and raise the appropriate typed exception."""
+    """Parse API error response envelopes and raise corresponding typed exceptions.
+
+    Args:
+        resp: HTTPX response object to inspect.
+
+    Raises:
+        AuthenticationError: If status code is 401.
+        PermissionDeniedError: If status code is 403.
+        NotFoundError: If status code is 404.
+        RateLimitExceededError: If status code is 429.
+        ServerError: If status code is >= 500.
+        CotApiError: If status code is any other HTTP error (>= 400).
+    """
     if resp.is_success:
         return
 
