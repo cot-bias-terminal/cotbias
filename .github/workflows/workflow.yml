@@ -1,0 +1,43 @@
+name: Publish to PyPI
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pypi-publish:
+    name: Build & Publish to PyPI
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Mandatory for PyPI Trusted Publishing (OIDC)
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Build distribution packages (wheel & sdist)
+        run: uv build
+
+      - name: Verify package metadata with twine
+        run: uvx twine check dist/*
+
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
