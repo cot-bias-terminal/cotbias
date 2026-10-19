@@ -12,24 +12,15 @@ Access institutional positioning metrics, 156-week historical timeseries across 
 
 ## Installation
 
-### Core SDK (Lightweight, zero Pandas/NumPy overhead)
+### Python SDK (Batteries-included with Pandas)
 ```bash
 pip install cotbias
 ```
 
-### With Pandas support (DataFrames)
-```bash
-pip install "cotbias[pandas]"
-```
-
-### With MCP Server (Claude Desktop, Cursor, AI agents)
+### With Model Context Protocol (MCP) Server
+For connecting into Claude Desktop, Cursor, or Cline:
 ```bash
 pip install "cotbias[mcp]"
-```
-
-Or install all features:
-```bash
-pip install "cotbias[all]"
 ```
 
 ---

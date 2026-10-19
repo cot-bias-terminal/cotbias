@@ -270,23 +270,21 @@ wheels = [
 
 [[package]]
 name = "cotbias"
-version = "0.2.0"
+version = "0.2.1"
 source = { editable = "." }
 dependencies = [
     { name = "httpx", extra = ["http2"] },
+    { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "pandas", version = "3.0.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "pydantic" },
 ]
 
 [package.optional-dependencies]
 all = [
     { name = "mcp" },
-    { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
-    { name = "pandas", version = "3.0.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
 dev = [
     { name = "mypy" },
-    { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
-    { name = "pandas", version = "3.0.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "pandas-stubs", version = "2.3.3.260113", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "pandas-stubs", version = "3.0.5.260914", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "pre-commit" },
@@ -298,19 +296,14 @@ dev = [
 mcp = [
     { name = "mcp" },
 ]
-pandas = [
-    { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
-    { name = "pandas", version = "3.0.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
-]
 
 [package.metadata]
 requires-dist = [
-    { name = "cotbias", extras = ["pandas", "mcp"], marker = "extra == 'all'" },
+    { name = "cotbias", extras = ["mcp"], marker = "extra == 'all'" },
     { name = "httpx", extras = ["http2"], specifier = ">=0.27.0" },
     { name = "mcp", marker = "extra == 'mcp'", specifier = ">=2.0.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.10.0" },
-    { name = "pandas", marker = "extra == 'dev'", specifier = ">=2.0.0" },
-    { name = "pandas", marker = "extra == 'pandas'", specifier = ">=2.0.0" },
+    { name = "pandas", specifier = ">=2.0.0" },
     { name = "pandas-stubs", marker = "extra == 'dev'", specifier = ">=2.0.0" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=3.7.0" },
     { name = "pydantic", specifier = ">=2.9.0" },
@@ -319,7 +312,7 @@ requires-dist = [
     { name = "respx", marker = "extra == 'dev'", specifier = ">=0.21.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.5.0" },
 ]
-provides-extras = ["pandas", "mcp", "all", "dev"]
+provides-extras = ["mcp", "all", "dev"]
 
 [[package]]
 name = "cryptography"

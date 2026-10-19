@@ -90,7 +90,7 @@ def create_server(
     """Build and configure the COT Bias MCPServer instance."""
     server = MCPServer(
         name="cotbias-mcp",
-        version="0.2.0",
+        version="0.2.1",
         instructions=(
             "COT Bias MCP Server provides quantitative CFTC Commitments of Traders (COT) "
             "data, institutional positioning regimes, and AI macro attributions across "
