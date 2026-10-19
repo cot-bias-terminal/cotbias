@@ -7,6 +7,26 @@ on:
     branches: [main]
 
 jobs:
+  verify-identity:
+    name: Verify Commit Identity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 100
+
+      - name: Verify commit authors and committers
+        run: |
+          echo "Scanning commits for unauthorized author or committer..."
+          UNAUTHORIZED=$(git log -n 50 --format='%h | %an <%ae> | %cn <%ce>' | grep -v -E '(github@cot-bias-terminal\.com|noreply@github\.com)' || true)
+          if [ -n "$UNAUTHORIZED" ]; then
+            echo "❌ ERROR: Commits found with unauthorized author/committer:"
+            echo "$UNAUTHORIZED"
+            exit 1
+          fi
+          echo "✅ All recent commits match authorized cot-bias-terminal identity."
+
   test:
     name: Python ${{ matrix.python-version }} on ubuntu-latest
     runs-on: ubuntu-latest
