@@ -50,11 +50,11 @@ async def test_async_timeseries_and_inference():
     )
 
     async with AsyncCotClient(api_key="cot_live_test") as cot:
-        ts = await cot.timeseries.get("GC")
-        df = await cot.timeseries.get("GC", as_dataframe=True)
+        df = await cot.timeseries.get("GC")
+        ts = await cot.timeseries.get("GC", as_dataframe=False)
         inf = await cot.inference.get("GC")
 
+    assert len(df) == 1
     assert isinstance(ts, TimeseriesResponse)
     assert ts.count == 1
-    assert len(df) == 1
     assert inf.ai_bias_score == "Bullish"
