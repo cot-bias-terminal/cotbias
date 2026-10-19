@@ -21,7 +21,7 @@ else:
 try:
     __version__ = importlib.metadata.version("cotbias")
 except (importlib.metadata.PackageNotFoundError, ValueError):
-    __version__ = "0.2.0"
+    __version__ = "0.2.1"
 
 
 class CotClient:
