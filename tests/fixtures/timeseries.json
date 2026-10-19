@@ -1,0 +1,43 @@
+{
+  "symbol": "ES",
+  "cftc_code": "13874+",
+  "contract_type": "futopt",
+  "report": "legacy",
+  "count": 2,
+  "data": [
+    {
+      "report_date": "2026-10-06",
+      "open_interest": 2450000,
+      "delta_open_interest": 35000,
+      "commercial_long": 890000,
+      "commercial_short": 940000,
+      "commercial_net": -50000,
+      "commercial_net_pct_oi": -2.04,
+      "noncommercial_net": 42000,
+      "noncommercial_net_pct_oi": 1.71,
+      "cot_52w_commercial": 68.5,
+      "z_score_156w_commercial": 0.85,
+      "dumb_money_index": 72.1,
+      "smart_money_divergence_index": 64.3,
+      "commercial_hedging_pressure": 0.42,
+      "conc_top4_net_short": 32.5
+    },
+    {
+      "report_date": "2026-10-13",
+      "open_interest": 2485000,
+      "delta_open_interest": 35000,
+      "commercial_long": 895000,
+      "commercial_short": 930000,
+      "commercial_net": -35000,
+      "commercial_net_pct_oi": -1.41,
+      "noncommercial_net": 56200,
+      "noncommercial_net_pct_oi": 2.26,
+      "cot_52w_commercial": 74.2,
+      "z_score_156w_commercial": 1.05,
+      "dumb_money_index": 78.4,
+      "smart_money_divergence_index": 71.0,
+      "commercial_hedging_pressure": 0.38,
+      "conc_top4_net_short": 30.1
+    }
+  ]
+}

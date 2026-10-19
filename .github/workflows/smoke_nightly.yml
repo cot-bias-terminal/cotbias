@@ -1,0 +1,42 @@
+name: Nightly Live Smoke Test
+
+on:
+  schedule:
+    # 03:00 UTC daily (after CFTC data processing)
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    name: Live API Smoke Test
+    runs-on: ubuntu-latest
+    if: github.repository == 'cot-bias-terminal/cotbias'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --extra all
+
+      - name: Run Live Smoke Verification
+        env:
+          COT_API_KEY: ${{ secrets.COT_LIVE_TEST_KEY }}
+        run: |
+          if [ -z "$COT_API_KEY" ]; then
+            echo "Skipping live smoke test: COT_LIVE_TEST_KEY secret not configured."
+            exit 0
+          fi
+          uv run python -c "
+          from cotbias import CotClient
+          with CotClient() as client:
+              markets = client.markets.list()
+              assert len(markets) > 0, 'No markets returned from live API'
+              inf = client.inference.get('ES')
+              assert inf.symbol == 'ES'
+              print('Live smoke test passed: %d markets available, ES AI regime is %s' % (len(markets), inf.ai_bias_score))
+          "
