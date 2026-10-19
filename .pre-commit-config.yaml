@@ -56,6 +56,15 @@ repos:
         types: [python]
         pass_filenames: false
 
+  # ── Git Identity Guardrail ────────────────────────────────────────────────────────
+  - repo: local
+    hooks:
+      - id: check-git-identity
+        name: check git identity
+        entry: bash -c 'EMAIL=$(git config user.email); NAME=$(git config user.name); if [ "$EMAIL" != "github@cot-bias-terminal.com" ] || [ "$NAME" != "cot-bias-terminal" ]; then echo "❌ Committing as \"$NAME <$EMAIL>\" is blocked. Must be \"cot-bias-terminal <github@cot-bias-terminal.com>\""; exit 1; fi'
+        language: system
+        pass_filenames: false
+
   # ── Python: pytest (unit tests) ────────────────────────────────────────────────────
   - repo: local
     hooks:
@@ -65,3 +74,4 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
+
