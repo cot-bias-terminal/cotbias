@@ -2,9 +2,12 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/cotbias.svg)](https://pypi.org/project/cotbias/)
 [![Python versions](https://img.shields.io/pypi/pyversions/cotbias.svg)](https://pypi.org/project/cotbias/)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue.svg)](https://cot-bias-terminal.github.io/cotbias/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 Official Python SDK and Model Context Protocol (MCP) Server for the **CFTC Commitment of Traders (COT) Bias Terminal** Quant API.
+
+📖 **[Read the Full Documentation](https://cot-bias-terminal.github.io/cotbias/)**
 
 Access institutional positioning metrics, 156-week historical timeseries across multiple CFTC report families, cross-market positioning screeners, and AI-driven market regime & attribution analysis directly in Python and in AI assistants (Claude Desktop, Cursor, Cline).
 
@@ -43,7 +46,7 @@ Connect your Quant API key directly into Claude Desktop or Cursor IDE:
 }
 ```
 
-See [docs/mcp.md](docs/mcp.md) for full configuration details, available tools (`get_market_snapshot`, `get_ai_inference`, `get_timeseries`, `scan_markets`, `list_markets`), and quota preservation caching.
+See the [MCP Documentation](https://cot-bias-terminal.github.io/cotbias/mcp/) for full configuration details, available tools (`get_market_snapshot`, `get_ai_inference`, `get_timeseries`, `scan_markets`, `list_markets`), and quota preservation caching.
 
 ---
 

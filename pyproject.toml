@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cotbias"
-version = "0.2.1"
+version = "0.2.2"
 description = "Official Python client & MCP Server for CFTC COT Bias Terminal Quant API"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -33,6 +33,11 @@ dependencies = [
 mcp = [
     "mcp>=2.0.0",
 ]
+docs = [
+    "mkdocs>=1.6,<2",
+    "mkdocs-material>=9.6,<10",
+    "mkdocstrings[python]>=0.28.0",
+]
 all = [
     "cotbias[mcp]",
 ]
@@ -51,7 +56,7 @@ cotbias-mcp = "cotbias.mcp.server:main"
 
 [project.urls]
 Homepage = "https://cot-bias-terminal.com"
-Documentation = "https://docs.cot-bias-terminal.com"
+Documentation = "https://cot-bias-terminal.github.io/cotbias/"
 Repository = "https://github.com/cot-bias-terminal/cotbias"
 
 [tool.pytest.ini_options]
