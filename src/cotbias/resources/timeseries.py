@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, cast, overload
+from typing import Literal, cast, overload
 
 import httpx
+import pandas as pd
 
 from cotbias.exceptions import handle_error_response
 from cotbias.models.timeseries import TimeseriesResponse
-
-if TYPE_CHECKING:
-    import pandas as pd
 
 ContractType = Literal["fut", "futopt", "opt"]
 ReportType = Literal["legacy", "pro", "disaggregated", "tff", "supplemental"]
@@ -25,8 +23,8 @@ class TimeseriesResource:
         contract_type: ContractType = ...,
         lookback_weeks: int = ...,
         report: ReportType = ...,
-        as_dataframe: Literal[False] = ...,
-    ) -> TimeseriesResponse: ...
+        as_dataframe: Literal[True] = ...,
+    ) -> pd.DataFrame: ...
 
     @overload
     def get(
@@ -35,8 +33,8 @@ class TimeseriesResource:
         contract_type: ContractType = ...,
         lookback_weeks: int = ...,
         report: ReportType = ...,
-        as_dataframe: Literal[True] = ...,
-    ) -> pd.DataFrame: ...
+        as_dataframe: Literal[False] = ...,
+    ) -> TimeseriesResponse: ...
 
     @overload
     def get(
@@ -54,7 +52,7 @@ class TimeseriesResource:
         contract_type: str = "futopt",
         lookback_weeks: int = 156,
         report: str = "legacy",
-        as_dataframe: bool = False,
+        as_dataframe: bool = True,
     ) -> pd.DataFrame | TimeseriesResponse:
         """Fetch historical positioning data.
 
@@ -63,7 +61,7 @@ class TimeseriesResource:
             contract_type: 'fut' (Futures only), 'futopt' (Combined), or 'opt' (Options delta).
             lookback_weeks: Number of weekly reports to pull (default 156 = 3 years).
             report: 'legacy' (default), 'pro', 'disaggregated', 'tff', or 'supplemental'.
-            as_dataframe: Returns a DatetimeIndex-sorted Pandas DataFrame if True, or TimeseriesResponse if False (default).
+            as_dataframe: Returns a DatetimeIndex-sorted Pandas DataFrame if True (default), or TimeseriesResponse if False.
         """
         params: dict[str, str | int] = {
             "contract_type": contract_type,
@@ -77,13 +75,6 @@ class TimeseriesResource:
 
         if not as_dataframe:
             return parsed
-
-        try:
-            import pandas as pd  # type: ignore[import-untyped]
-        except ImportError as exc:
-            raise ImportError(
-                "pandas is required when as_dataframe=True. Install it via 'pip install cotbias[pandas]'."
-            ) from exc
 
         raw_data = [row.model_dump() for row in parsed.data]
         if not raw_data:
@@ -108,8 +99,8 @@ class AsyncTimeseriesResource:
         contract_type: ContractType = ...,
         lookback_weeks: int = ...,
         report: ReportType = ...,
-        as_dataframe: Literal[False] = ...,
-    ) -> TimeseriesResponse: ...
+        as_dataframe: Literal[True] = ...,
+    ) -> pd.DataFrame: ...
 
     @overload
     async def get(
@@ -118,8 +109,9 @@ class AsyncTimeseriesResource:
         contract_type: ContractType = ...,
         lookback_weeks: int = ...,
         report: ReportType = ...,
-        as_dataframe: Literal[True] = ...,
-    ) -> pd.DataFrame: ...
+        as_dataframe: Literal[False] = ...,
+    ) -> TimeseriesResponse: ...
+
     @overload
     async def get(
         self,
@@ -136,7 +128,7 @@ class AsyncTimeseriesResource:
         contract_type: str = "futopt",
         lookback_weeks: int = 156,
         report: str = "legacy",
-        as_dataframe: bool = False,
+        as_dataframe: bool = True,
     ) -> pd.DataFrame | TimeseriesResponse:
         params: dict[str, str | int] = {
             "contract_type": contract_type,
@@ -150,13 +142,6 @@ class AsyncTimeseriesResource:
 
         if not as_dataframe:
             return parsed
-
-        try:
-            import pandas as pd  # type: ignore[import-untyped]
-        except ImportError as exc:
-            raise ImportError(
-                "pandas is required when as_dataframe=True. Install it via 'pip install cotbias[pandas]'."
-            ) from exc
 
         raw_data = [row.model_dump() for row in parsed.data]
         if not raw_data:
