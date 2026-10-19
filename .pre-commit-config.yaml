@@ -33,6 +33,7 @@ repos:
           .*\.lock|
           uv\.lock|
           tests/.*|
+          docs/.*|
           README\.md|
           src/cotbias/client\.py
           )$
