@@ -1,3 +1,5 @@
+"""Pydantic data models and typing definitions for COT Bias API responses."""
+
 from __future__ import annotations
 
 from .inference import (

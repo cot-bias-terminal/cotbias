@@ -1,3 +1,10 @@
+"""Model Context Protocol (MCP) server for COT Bias Terminal.
+
+Exposes institutional CFTC COT positioning data, AI market regimes,
+multi-asset screeners, and prompt templates to AI agents like Claude Desktop,
+Cursor IDE, and Cline.
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -11,7 +18,7 @@ from typing import Any
 
 from mcp.server.mcpserver import MCPServer
 
-from cotbias.client import AsyncCotClient
+from cotbias.client import AsyncCotClient, __version__
 from cotbias.config import DEFAULT_BASE_URL
 from cotbias.exceptions import (
     AuthenticationError,
@@ -29,9 +36,18 @@ class TTLCache:
     """Thread/asyncio-safe lightweight in-memory TTL cache to safeguard Quant API quota."""
 
     def __init__(self) -> None:
+        """Initialize an empty in-memory cache."""
         self._cache: dict[str, tuple[float, Any]] = {}
 
     def get(self, key: str) -> Any | None:
+        """Retrieve a cached value if present and unexpired.
+
+        Args:
+            key: Cache lookup key string.
+
+        Returns:
+            Cached value if found and valid, otherwise `None`.
+        """
         if key in self._cache:
             ts, val = self._cache[key]
             if time.monotonic() < ts:
@@ -40,9 +56,17 @@ class TTLCache:
         return None
 
     def set(self, key: str, val: Any, ttl_seconds: float) -> None:
+        """Store a value with an expiration TTL.
+
+        Args:
+            key: Cache key string.
+            val: Arbitrary value to cache.
+            ttl_seconds: Time to live in seconds before expiry.
+        """
         self._cache[key] = (time.monotonic() + ttl_seconds, val)
 
     def clear(self) -> None:
+        """Purge all entries from the cache."""
         self._cache.clear()
 
 
@@ -87,10 +111,19 @@ def create_server(
     base_url: str = DEFAULT_BASE_URL,
     enable_cache: bool = True,
 ) -> MCPServer:
-    """Build and configure the COT Bias MCPServer instance."""
+    """Build and configure the COT Bias MCPServer instance.
+
+    Args:
+        api_key: Quant tier API key. If omitted, falls back to `COT_API_KEY` in environment.
+        base_url: Upstream API base endpoint URL.
+        enable_cache: Whether to enable in-memory TTL caching for quota preservation.
+
+    Returns:
+        An initialized and configured MCPServer instance ready to run.
+    """
     server = MCPServer(
         name="cotbias-mcp",
-        version="0.2.1",
+        version=__version__,
         instructions=(
             "COT Bias MCP Server provides quantitative CFTC Commitments of Traders (COT) "
             "data, institutional positioning regimes, and AI macro attributions across "
@@ -341,10 +374,13 @@ def create_server(
     )
     def cot_macro_briefing() -> str:
         return (
-            "You are an institutional macro quantitative analyst specializing in CFTC Commitments of Traders (COT) flows.\n"
+            "You are an institutional macro quantitative analyst specializing in CFTC "
+            "Commitments of Traders (COT) flows.\n"
             "1. Call 'scan_markets' to discover contracts with 'High Liquidation Risk' and 'High Squeeze Risk'.\n"
-            "2. Identify the top 3 extreme positioning shifts across Equities (ES/NQ), Commodities (GC/CL), and Rates (ZB/ZN).\n"
-            "3. Summarize the commercial vs non-commercial flow dynamics and highlight where Dumb Money is trapped or where Smart Money is aggressively diverging."
+            "2. Identify the top 3 extreme positioning shifts across Equities (ES/NQ), Commodities (GC/CL), "
+            "and Rates (ZB/ZN).\n"
+            "3. Summarize commercial vs non-commercial flow dynamics and highlight where Dumb Money is trapped "
+            "or where Smart Money is aggressively diverging."
         )
 
     @server.prompt(
@@ -357,7 +393,8 @@ def create_server(
             f"1. Call 'get_market_snapshot' for symbol '{symbol.upper()}'.\n"
             "2. Evaluate the regime status, momentum classification, and crowdedness risk.\n"
             "3. Review the commercial hedging pressure and historical percentile.\n"
-            "4. Conclude with a probabilistic market outlook and key inflection levels based on positioning vulnerability."
+            "4. Conclude with a probabilistic market outlook and key inflection levels based on positioning "
+            "vulnerability."
         )
 
     return server

@@ -1,3 +1,5 @@
+"""HTTP transport middleware with automatic exponential backoff and jitter."""
+
 from __future__ import annotations
 
 import asyncio
@@ -17,7 +19,14 @@ MAX_RETRY_AFTER_SEC = 10.0
 
 
 def _should_retry_response(resp: httpx.Response) -> tuple[bool, float | None]:
-    """Determine if a response is retriable and calculate required delay."""
+    """Determine if an HTTP response is retriable and calculate the required delay.
+
+    Args:
+        resp: The HTTP response to inspect.
+
+    Returns:
+        A tuple `(should_retry, delay_seconds)`.
+    """
     # 5xx Server Errors are transient and retriable
     if resp.status_code in {500, 502, 503, 504}:
         return True, None
@@ -49,7 +58,11 @@ def _should_retry_response(resp: httpx.Response) -> tuple[bool, float | None]:
 
 
 class RetryTransport(httpx.BaseTransport):
-    """Sync HTTP transport with exponential backoff and jitter."""
+    """Synchronous HTTP transport middleware with exponential backoff and jitter.
+
+    Retries transient 5xx server errors, connection timeouts, and short-duration
+    transient 429 rate limit responses.
+    """
 
     def __init__(
         self,
@@ -57,11 +70,26 @@ class RetryTransport(httpx.BaseTransport):
         max_retries: int = DEFAULT_MAX_RETRIES,
         backoff_factor: float = DEFAULT_BACKOFF_FACTOR,
     ) -> None:
+        """Initialize the retry transport wrapper.
+
+        Args:
+            transport: The underlying HTTP transport to delegate requests to.
+            max_retries: Maximum number of retry attempts before raising.
+            backoff_factor: Multiplier for exponential backoff calculations.
+        """
         self._inner = transport
         self._max_retries = max(0, max_retries)
         self._backoff = backoff_factor
 
     def handle_request(self, request: httpx.Request) -> httpx.Response:
+        """Send the request through the inner transport with automatic retry on transient failure.
+
+        Args:
+            request: The outgoing HTTP request.
+
+        Returns:
+            The HTTP response received from the server.
+        """
         request.read()
         attempts = 0
 
@@ -107,11 +135,16 @@ class RetryTransport(httpx.BaseTransport):
                 raise
 
     def close(self) -> None:
+        """Close the underlying inner transport."""
         self._inner.close()
 
 
 class AsyncRetryTransport(httpx.AsyncBaseTransport):
-    """Async HTTP transport with exponential backoff and jitter."""
+    """Asynchronous HTTP transport middleware with exponential backoff and jitter.
+
+    Retries transient 5xx server errors, connection timeouts, and short-duration
+    transient 429 rate limit responses asynchronously.
+    """
 
     def __init__(
         self,
@@ -119,11 +152,26 @@ class AsyncRetryTransport(httpx.AsyncBaseTransport):
         max_retries: int = DEFAULT_MAX_RETRIES,
         backoff_factor: float = DEFAULT_BACKOFF_FACTOR,
     ) -> None:
+        """Initialize the async retry transport wrapper.
+
+        Args:
+            transport: The underlying async HTTP transport to delegate requests to.
+            max_retries: Maximum number of retry attempts before raising.
+            backoff_factor: Multiplier for exponential backoff calculations.
+        """
         self._inner = transport
         self._max_retries = max(0, max_retries)
         self._backoff = backoff_factor
 
     async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
+        """Send the async request through the inner transport with automatic retry on transient failure.
+
+        Args:
+            request: The outgoing HTTP request.
+
+        Returns:
+            The HTTP response received from the server.
+        """
         await request.aread()
         attempts = 0
 
@@ -169,4 +217,5 @@ class AsyncRetryTransport(httpx.AsyncBaseTransport):
                 raise
 
     async def aclose(self) -> None:
+        """Close the underlying inner async transport."""
         await self._inner.aclose()

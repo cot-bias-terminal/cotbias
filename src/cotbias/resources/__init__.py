@@ -1,3 +1,5 @@
+"""Resource client modules mapping to COT Bias API endpoints."""
+
 from __future__ import annotations
 
 from .inference import AsyncInferenceResource, InferenceResource

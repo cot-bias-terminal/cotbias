@@ -1,3 +1,5 @@
+"""Global configuration constants and environment variable defaults."""
+
 import os
 
 DEFAULT_BASE_URL = os.getenv("COT_API_BASE_URL", "https://api.cot-bias-terminal.com/v1")

@@ -1,33 +1,98 @@
+# Configuration & Advanced Options
+
+This guide covers all client initialization options, environment variable defaults, enterprise network proxies, and custom SSL setups.
+
 ---
-status: stub
----
 
-# Configuration
+## 🌍 Environment Variables
 
-Detailed reference for all client initialization parameters and environment variables.
+You can configure global defaults for `cotbias` through environment variables:
 
-!!! note "Documentation in Progress"
-    This guide is currently being drafted as part of our Phase 2 documentation rollout.
-
-## Environment Variables
-
-| Variable | Default | Description |
+| Environment Variable | Default Value | Description |
 |---|---|---|
-| `COT_API_KEY` | None | Quant Tier API authentication key. |
-| `COT_API_URL` | `https://api.cot-bias-terminal.com` | Base URL for the COT Bias Terminal API. |
-| `COT_TIMEOUT` | `30.0` | Default request timeout in seconds. |
+| `COT_API_KEY` | *None* | Your Quant Tier API key for authentication. |
+| `COT_API_BASE_URL` | `https://api.cot-bias-terminal.com/v1` | Root API endpoint URL. |
+| `COT_TIMEOUT_SEC` | `15.0` | Default socket timeout in seconds. |
+| `COT_MAX_RETRIES` | `3` | Maximum automatic retries on transient errors. |
 
-## Client Parameters
+---
 
-Both `CotClient` and `AsyncCotClient` accept the following arguments:
+## 🛠 Client Constructor Arguments
 
-- `api_key: Optional[str]`: API key (falls back to `COT_API_KEY`).
-- `base_url: Optional[str]`: Base URL (falls back to `COT_API_URL`).
-- `timeout: float`: Timeout in seconds (default `30.0`).
-- `max_retries: int`: Maximum retry attempts for transient errors (default `3`).
-- `http2: bool`: Enable HTTP/2 protocol support (default `True`).
+Both `CotClient` and `AsyncCotClient` accept identical keyword arguments:
 
-## Roadmap & Upcoming Content
-- [ ] Enterprise proxy configurations (`http_proxy`, `https_proxy`).
-- [ ] Custom SSL context injection.
-- [ ] Custom httpx client injection.
+```python
+from cotbias import CotClient
+
+client = CotClient(
+    api_key="cot_live_...",
+    base_url="https://api.cot-bias-terminal.com/v1",
+    timeout=20.0,
+    max_retries=5,
+    transport=None,
+)
+```
+
+| Argument | Type | Default | Description |
+|---|---|---|---|
+| `api_key` | `str | None` | `None` | API key. Falls back to `COT_API_KEY` in environment. |
+| `base_url` | `str` | `DEFAULT_BASE_URL` | Base endpoint URL. Falls back to `COT_API_BASE_URL`. |
+| `timeout` | `float` | `DEFAULT_TIMEOUT_SEC` | Socket connection and read timeout in seconds. |
+| `max_retries` | `int` | `DEFAULT_MAX_RETRIES` | Number of retry attempts for 5xx/network errors. |
+| `transport` | `httpx.BaseTransport | None` | `None` | Custom HTTP transport (sync) or `AsyncBaseTransport` (async). |
+
+---
+
+## 🏢 Enterprise Networking & Proxies
+
+### 1. HTTP/HTTPS Corporate Proxies
+
+If your trading environment operates behind a corporate forward proxy, pass a custom `httpx.HTTPTransport`:
+
+=== "Synchronous Client"
+    ```python
+    import httpx
+    from cotbias import CotClient
+
+    proxy_transport = httpx.HTTPTransport(
+        proxy="http://proxy.corporate.internal:8080",
+        http2=True,
+    )
+
+    client = CotClient(transport=proxy_transport)
+    ```
+
+=== "Asynchronous Client"
+    ```python
+    import httpx
+    from cotbias import AsyncCotClient
+
+    async_proxy_transport = httpx.AsyncHTTPTransport(
+        proxy="http://proxy.corporate.internal:8080",
+        http2=True,
+    )
+
+    client = AsyncCotClient(transport=async_proxy_transport)
+    ```
+
+### 2. Custom SSL Certificates / Internal CA
+
+To trust private enterprise root certificates:
+
+```python
+import httpx
+from cotbias import CotClient
+
+custom_ssl_transport = httpx.HTTPTransport(
+    verify="/etc/ssl/certs/corporate-internal-ca.pem",
+    http2=True,
+)
+
+client = CotClient(transport=custom_ssl_transport)
+```
+
+---
+
+## 🔒 Custom Request Headers
+
+The client automatically sets `Accept: application/json` and sends a descriptive `User-Agent` (`cotbias-python/<version>`). All requests include `X-API-Key`.
