@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "cotbias": {
+      "command": "uvx",
+      "args": [
+        "cotbias[mcp]",
+        "cotbias-mcp"
+      ],
+      "env": {
+        "COT_API_KEY": "cot_live_YOUR_ACTUAL_API_KEY"
+      }
+    }
+  }
+}
