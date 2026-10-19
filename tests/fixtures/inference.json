@@ -1,0 +1,20 @@
+{
+  "symbol": "ES",
+  "report_date": "2026-10-13",
+  "ai_bias_score": "Bullish",
+  "regime_status": "Bullish Alignment",
+  "primary_driver": "Asset Managers",
+  "momentum": "New Longs (OI Expanding)",
+  "cot_positioning": "Convergence",
+  "hedging_pressure": "Conservative",
+  "historical_percentile": "Elevated (70-90%)",
+  "crowdedness_risk": "Balanced",
+  "smart_money_divergence": "Aggressive",
+  "dumb_money_index": "Euphoria",
+  "qualitative_attribution": {
+    "flow_dynamic_summary": "Asset Managers expanded net longs by 14,200 contracts while Leveraged Funds covered tactical shorts.",
+    "macro_rationale": "Sustained corporate earnings momentum and easing monetary expectations driving equity positioning.",
+    "structural_vulnerability": "Elevated asset manager concentration presents tail squeeze vulnerability on unexpected macro volatility."
+  },
+  "custom_future_backend_field": "resilient_to_drift"
+}
